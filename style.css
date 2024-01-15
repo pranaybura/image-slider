@@ -38,3 +38,10 @@
 .slider-nav a:hover {
     opacity: 1;
 }
+.slider:active {
+    cursor: grabbing;
+}
+.slider:active img {
+    cursor: grabbing;
+    transform: scale(1.02);
+}
