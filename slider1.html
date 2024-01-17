@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider-1</title>
+</head>
+<body>
+    <style scoped="scoped">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+        }
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0 35px;
+            background-color: gradient(to right, #392525, #d63232);
+        }
+        .wrapper {
+            max-width: 100vw;
+            width: 100%;
+            overflow: auto;
+        }
+        .wrapper > i {
+            padding: 0 20px;
+            background-color: black;
+            color: white;
+            border-radius: 40px;
+            line-height: 50px;
+            font-size: 25px;
+            cursor: pointer;
+            position: absolute;
+            text-align: center;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+            user-select: none;
+        }
+        .wrapper > i:first-child {
+            left: 0;
+        }
+        .wrapper > i:last-child {
+            right: 0;
+        }
+        .wrapper > .slider {
+            display: grid;
+            grid-auto-flow: column;
+            /* grid-auto-columns: calc((100%/3) - 12px); */
+            grid-gap: 25px;
+            overflow-x: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            scrollbar-width: 0;
+        }
+        .slider::-webkit-scrollbar {
+            display: none;
+        }
+        .slider.dragging {
+            scroll-snap-type: none;
+            scroll-behavior: auto;
+        }
+        .slider.dragging .slide {
+            cursor: grabbing;
+            user-select: none; 
+        }
+        .slider > .slide {
+            scroll-snap-align: center;
+            width: 100%;
+            list-style: none;
+            cursor: pointer;
+        }
+        .slide > .img-block img {
+            max-width: 1000px;
+            height: 600px;
+            object-fit: cover;
+        }
+        @media screen and (max-width: 1080px) {
+            .wrapper > .slider {
+                grid-auto-columns: 100%;
+            }
+            .slide > .img-block img {
+                max-width: 1000px;  
+                width: 100%;
+                height: auto;
+            }
+        }
+        
+    </style>
+
+    <section>
+        <div class="wrapper">
+            <i id="left">&#10094;</i>
+            <ul class="slider">
+                <li class="slide">
+                    <div class="img-block">
+                        <img src="https://picsum.photos/600/300" alt="" draggable="false">
+                    </div>
+                </li>
+                <li class="slide">
+                    <div class="img-block">
+                        <img src="https://picsum.photos/700/300" alt="" draggable="false">
+                    </div>
+                </li>
+                <li class="slide">
+                    <div class="img-block">
+                        <img src="https://picsum.photos/800/300" alt="" draggable="false">
+                    </div>
+                </li>
+            </ul>
+            <i id="right">&#10095;</i>
+        </div>
+    </section>
+    
+    <script defer>
+        window.addEventListener('load', () => {
+            const slider = document.querySelector('.slider');
+    
+            let isDragging = false, startX, startScrollLeft;
+    
+            const dragStart = (e) => {
+                isDragging = true;
+                slider.classList.add('dragging');
+                startX = e.pageX;
+                startScrollLeft = slider.scrollLeft;
+            }
+    
+            const dragging = (e) => {
+                if (!isDragging) return;
+                slider.scrollLeft = startScrollLeft - (e.pageX - startX);
+            }
+    
+            const dragStop = () => {
+                isDragging = false;
+                slider.classList.remove('dragging');
+            }
+    
+            slider.addEventListener('mousedown', dragStart);
+            slider.addEventListener('mousemove', dragging);
+            slider.addEventListener('mouseup', dragStop);
+    
+            const arrowButtons = document.querySelectorAll('.wrapper i');
+            let firstSlideWidth;
+    
+            const setFirstSlideWidth = () => {
+                firstSlideWidth = slider.querySelector('.slide').offsetWidth;
+            };
+    
+            arrowButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    slider.scrollLeft += btn.id === 'left' ? -firstSlideWidth : firstSlideWidth;
+                });
+            });
+    
+            window.addEventListener('resize', setFirstSlideWidth);
+            setFirstSlideWidth(); // Call it initially as well
+    
+            const sliderChildrens = [...slider.children];
+            let slidePerView = Math.round(slider.offsetWidth / firstSlideWidth);
+    
+            sliderChildrens.slice(-slidePerView).reverse().forEach(slide => {
+                slider.insertAdjacentHTML('afterbegin', slide.outerHTML);
+            });
+    
+            sliderChildrens.slice(0, slidePerView).forEach(slide => {
+                slider.insertAdjacentHTML('beforeend', slide.outerHTML);
+            });
+        });
+    </script>
+</body>
+</html>
