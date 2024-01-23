@@ -12,8 +12,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-        body {
-        }
         section {
             display: flex;
             justify-content: center;
@@ -90,6 +88,26 @@
                 height: auto;
             }
         }
+        .slider-nav {
+            display: flex;
+            column-gap: 1rem;
+            position: absolute;
+            bottom: 1.25rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        .slider-nav a {
+            width: .5rem;
+            height: .5rem;
+            border-radius: 50%;
+            background-color: #000000;
+            opacity: .75;
+            transition: opacity ease 250ms;
+        }
+        .slider-nav a:hover {
+            opacity: 1;
+        }
         
     </style>
 
@@ -97,17 +115,17 @@
         <div class="wrapper">
             <i id="left">&#10094;</i>
             <ul class="slider">
-                <li class="slide">
+                <li class="slide" id="slide-1">
                     <div class="img-block">
                         <img src="https://picsum.photos/600/300" alt="" draggable="false">
                     </div>
                 </li>
-                <li class="slide">
+                <li class="slide" id="slide-2">
                     <div class="img-block">
                         <img src="https://picsum.photos/700/300" alt="" draggable="false">
                     </div>
                 </li>
-                <li class="slide">
+                <li class="slide" id="slide-3">
                     <div class="img-block">
                         <img src="https://picsum.photos/800/300" alt="" draggable="false">
                     </div>
@@ -115,62 +133,67 @@
             </ul>
             <i id="right">&#10095;</i>
         </div>
+        <div class="slider-nav">
+            <a href="#slide-1"></a>
+            <a href="#slide-2"></a>
+            <a href="#slide-3"></a>
+        </div>
     </section>
     
     <script defer>
-        window.addEventListener('load', () => {
-            const slider = document.querySelector('.slider');
-    
-            let isDragging = false, startX, startScrollLeft;
-    
-            const dragStart = (e) => {
-                isDragging = true;
-                slider.classList.add('dragging');
-                startX = e.pageX;
-                startScrollLeft = slider.scrollLeft;
-            }
-    
-            const dragging = (e) => {
-                if (!isDragging) return;
-                slider.scrollLeft = startScrollLeft - (e.pageX - startX);
-            }
-    
-            const dragStop = () => {
-                isDragging = false;
-                slider.classList.remove('dragging');
-            }
-    
-            slider.addEventListener('mousedown', dragStart);
-            slider.addEventListener('mousemove', dragging);
-            slider.addEventListener('mouseup', dragStop);
-    
-            const arrowButtons = document.querySelectorAll('.wrapper i');
-            let firstSlideWidth;
-    
-            const setFirstSlideWidth = () => {
-                firstSlideWidth = slider.querySelector('.slide').offsetWidth;
-            };
-    
-            arrowButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    slider.scrollLeft += btn.id === 'left' ? -firstSlideWidth : firstSlideWidth;
-                });
-            });
-    
-            window.addEventListener('resize', setFirstSlideWidth);
-            setFirstSlideWidth(); // Call it initially as well
-    
-            const sliderChildrens = [...slider.children];
-            let slidePerView = Math.round(slider.offsetWidth / firstSlideWidth);
-    
-            sliderChildrens.slice(-slidePerView).reverse().forEach(slide => {
-                slider.insertAdjacentHTML('afterbegin', slide.outerHTML);
-            });
-    
-            sliderChildrens.slice(0, slidePerView).forEach(slide => {
-                slider.insertAdjacentHTML('beforeend', slide.outerHTML);
+    window.addEventListener('load', () => {
+        const slider = document.querySelector('.slider');
+
+        let isDragging = false, startX, startScrollLeft;
+
+        const dragStart = (e) => {
+            isDragging = true;
+            slider.classList.add('dragging');
+            startX = e.pageX;
+            startScrollLeft = slider.scrollLeft;
+        }
+
+        const dragging = (e) => {
+            if (!isDragging) return;
+            slider.scrollLeft = startScrollLeft - (e.pageX - startX);
+        }
+
+        const dragStop = () => {
+            isDragging = false;
+            slider.classList.remove('dragging');
+        }
+
+        slider.addEventListener('mousedown', dragStart);
+        slider.addEventListener('mousemove', dragging);
+        slider.addEventListener('mouseup', dragStop);
+
+        const arrowButtons = document.querySelectorAll('.wrapper i');
+        let firstSlideWidth;
+
+        const setFirstSlideWidth = () => {
+            firstSlideWidth = slider.querySelector('.slide').offsetWidth;
+        };
+
+        arrowButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                slider.scrollLeft += btn.id === 'left' ? -firstSlideWidth : firstSlideWidth;
             });
         });
-    </script>
+
+        window.addEventListener('resize', setFirstSlideWidth);
+        setFirstSlideWidth(); // Call it initially as well
+
+        const sliderChildrens = [...slider.children];
+        let slidePerView = Math.round(slider.offsetWidth / firstSlideWidth);
+
+        sliderChildrens.slice(-slidePerView).reverse().forEach(slide => {
+            slider.insertAdjacentHTML('afterbegin', slide.outerHTML);
+        });
+
+        sliderChildrens.slice(0, slidePerView).forEach(slide => {
+            slider.insertAdjacentHTML('beforeend', slide.outerHTML);
+        });
+    });
+</script>
 </body>
 </html>
